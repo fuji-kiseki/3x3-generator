@@ -13,8 +13,9 @@ viewUpload : (List File -> msg) -> Html msg
 viewUpload msg =
     label
         [ attribute "aria-label" "Upload image"
-        , class "h-full aspect-square flex flex-col items-center justify-center rounded-md"
-        , class "border border-gray-200 border-dashed cursor-pointer group hover:border-gray-400"
+        , class "group flex h-full aspect-square flex-col items-center justify-center rounded-md"
+        , class "cursor-pointer border border-dashed border-dn-border-100 hover:border-dn-border-100"
+        , class "bg-dn-background-100 hover:bg-dn-background-300 transition-colors"
         ]
         [ input
             [ type_ "file"
@@ -25,9 +26,11 @@ viewUpload msg =
             ]
             []
         , viewFileUp
-            [ Svg.Attributes.class "h-6 w-6 text-gray-600 group-hover:text-black"
+            [ Svg.Attributes.class "h-6 w-6 text-dn-muted-200 group-hover:text-dn-foreground-300 transition-colors"
             ]
-        , span [ class "text-gray-600  text-xs pt-2 group-hover:text-black" ]
+        , span
+            [ class "pt-2 text-xs text-dn-muted-200 group-hover:text-dn-foreground-200 transition-colors"
+            ]
             [ text "Upload" ]
         ]
 

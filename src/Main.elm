@@ -207,7 +207,8 @@ view { modal, images, imageSelector, theme } =
                         , ImagePicker.Control "Url" Image.Url ChangeCategory
                             |> ImagePicker.viewControl imageSelector.selectedCategory
                         ]
-                    , div [ class "flex w-fit px-2 bg-white border border-gray-200 rounded-sm" ]
+                    , div
+                        [ class "flex w-fit px-2 rounded-lg border bg-dn-background-100 border-dn-border-100" ]
                         [ input
                             [ type_ "text"
                             , name "url"
@@ -232,7 +233,10 @@ view { modal, images, imageSelector, theme } =
                                         )
                                 )
                             , onInput ChangeSearchQuery
-                            , class "outline-none caret-gray-600"
+                            , class "w-full px-2 py-1 bg-transparent outline-none"
+                            , class "text-dn-foreground-300"
+                            , class "placeholder:text-dn-foreground-100"
+                            , class "caret-dn-foreground-100"
                             ]
                             []
                         ]

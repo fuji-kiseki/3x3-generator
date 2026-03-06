@@ -1,8 +1,8 @@
 module Views.Dialog exposing (ModalConfig, viewDialog, viewHeader)
 
 import Html exposing (..)
-import Html.Attributes exposing (class)
-import Html.Events exposing (..)
+import Html.Attributes exposing (class, classList)
+import Html.Events exposing (onClick)
 
 
 type alias ModalConfig msg =
@@ -14,11 +14,13 @@ type alias ModalConfig msg =
 viewDialog : ModalConfig msg -> Bool -> List (Html msg) -> Html msg
 viewDialog { onClose, onConfirm } open content =
     if open then
-        div [ class "fixed inset-0 flex items-center justify-center" ]
+        div
+            [ class "fixed inset-0 flex items-center justify-center bg-dn-foreground-200/20 backdrop-blur-sm" ]
             [ div
-                [ class "flex flex-col justify-center w-3xl bg-white border border-gray-200 rounded-xl overflow-hidden max-w-9/10 max-h-8/10" ]
+                [ class "flex flex-col justify-center w-3xl max-w-9/10 max-h-8/10 overflow-hidden rounded-xl border border-dn-border-100 bg-dn-background-100" ]
                 [ div [ class "overflow-auto" ] content
-                , footer [ class "flex justify-between bg-gray-50/90 border-t border-gray-200 p-4" ]
+                , footer
+                    [ class "flex justify-between p-4 border-t border-dn-border-100 bg-dn-background-200/90 backdrop-blur-sm" ]
                     [ button [ baseBtnStyle, closeBtnStyle, onClick onClose ] [ text "Cancel" ]
                     , button
                         (baseBtnStyle
@@ -30,7 +32,7 @@ viewDialog { onClose, onConfirm } open content =
                                         [ confirmBtnStyle True, onClick msg ]
                                )
                         )
-                        [ text "confirm" ]
+                        [ text "Confirm" ]
                     ]
                 ]
             ]
@@ -41,23 +43,28 @@ viewDialog { onClose, onConfirm } open content =
 
 viewHeader : List (Html msg) -> Html msg
 viewHeader content =
-    header [ class "sticky top-0 p-4 bg-gray-50/90 backdrop-blur-sm border-b border-gray-200" ] content
+    header
+        [ class "sticky top-0 p-4 border-b border-dn-border-100 bg-dn-background-200/90 backdrop-blur-sm" ]
+        content
 
 
 baseBtnStyle : Attribute msg
 baseBtnStyle =
-    class "p-2 rounded-md transition-colors duration-200"
+    class "px-3 py-2 rounded-md text-sm transition-colors"
 
 
 closeBtnStyle : Attribute msg
 closeBtnStyle =
-    class "p-2 bg-white cursor-pointer border rounded-md border-gray-200 hover:bg-gray-100"
+    class "cursor-pointer border border-dn-border-100 bg-dn-background-100 text-dn-foreground-200 hover:bg-dn-background-200"
 
 
 confirmBtnStyle : Bool -> Attribute msg
 confirmBtnStyle isActive =
-    if isActive then
-        class "bg-neutral-950 text-white cursor-pointer hover:bg-neutral-800"
-
-    else
-        class "bg-gray-200 text-neutral-400 cursor-not-allowed"
+    classList
+        [ ( "bg-dn-emphasis-100 text-dn-emphasis-foreground hover:bg-dn-emphasis-hover cursor-pointer"
+          , isActive
+          )
+        , ( "bg-dn-background-200 text-dn-foreground-100 cursor-not-allowed"
+          , not isActive
+          )
+        ]
