@@ -22,8 +22,8 @@ import Views.Upload exposing (viewUpload)
 
 
 type alias Model =
-    { images : Dict Int ImageState
-    , modal : { target : Maybe Int }
+    { images : Dict String ImageState
+    , modal : { target : Maybe String }
     , imageSelector : ImageSelector
     , theme : Theme.Model
     }
@@ -31,8 +31,8 @@ type alias Model =
 
 type Msg
     = GotFiles (List File)
-    | ImageLoaded Int Image
-    | OpenModal Int
+    | ImageLoaded String Image
+    | OpenModal String
     | CloseModal
     | ChangeSearchQuery String
     | UpdateEntry Image.ImageOption
@@ -61,7 +61,7 @@ init flags =
     in
     ( { images =
             List.range 0 8
-                |> List.map (\i -> ( i, Image.Empty ))
+                |> List.map (\i -> ( String.fromInt i, Image.Empty ))
                 |> Dict.fromList
       , modal = { target = Nothing }
       , imageSelector =
@@ -261,14 +261,14 @@ subscriptions _ =
         }
 
 
-viewKeyedImage : Int -> ImageState -> ( String, Html Msg )
-viewKeyedImage index image =
-    ( String.fromInt index, lazy2 viewImage index image )
+viewKeyedImage : String -> ImageState -> ( String, Html Msg )
+viewKeyedImage key image =
+    ( key, lazy2 viewImage key image )
 
 
-viewImage : Int -> ImageState -> Html Msg
-viewImage index image =
-    div [ onClick (OpenModal index) ]
+viewImage : String -> ImageState -> Html Msg
+viewImage key image =
+    div [ onClick (OpenModal key) ]
         [ div
             [ class "flex items-center select-none justify-center overflow-hidden h-50 w-50 cursor-pointer aspect-square"
             ]
