@@ -15,7 +15,7 @@ import Theme exposing (StoredTheme, Theme)
 import Views.Dialog as Dialog
 import Views.Image as Image
 import Views.Layout exposing (viewLayoutGrid)
-import Views.Switch as ImagePicker
+import Views.Switch as Switch
 import Views.Upload exposing (viewUpload)
 
 
@@ -103,11 +103,16 @@ view { modal, images, imageSelector, theme } =
             )
             [ Dialog.viewHeader
                 [ div [ class "flex justify-between" ]
-                    [ ImagePicker.switch
-                        [ ImagePicker.Control "files" Image.Upload ChangeCategory
-                            |> ImagePicker.viewControl imageSelector.selectedCategory
-                        , ImagePicker.Control "Url" Image.Url ChangeCategory
-                            |> ImagePicker.viewControl imageSelector.selectedCategory
+                    [ Switch.viewSwitch
+                        { toMsg = ChangeCategory
+                        , selected = imageSelector.selectedCategory
+                        }
+                        [ { value = Image.Upload
+                          , content = [ text "Files" ]
+                          }
+                        , { value = Image.Url
+                          , content = [ text "Url" ]
+                          }
                         ]
                     , div
                         [ class "flex w-fit px-2 rounded-lg border bg-dn-background-100 border-dn-border-100" ]
