@@ -1,1 +1,1 @@
-# pyramid-song
+# 3x3-generator

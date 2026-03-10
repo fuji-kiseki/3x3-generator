@@ -24,7 +24,7 @@
 
       packages = eachSystem (pkgs: {
         default = pkgs.stdenv.mkDerivation {
-          name = "pyramid-song";
+          name = "3x3-generator";
           src = self;
 
           nativeBuildInputs = with pkgs; [
@@ -35,7 +35,7 @@
           ];
 
           pnpmDeps = pkgs.fetchPnpmDeps {
-            pname = "pyramid-song";
+            pname = "3x3-generator";
             src = self;
             fetcherVersion = 1;
             hash = "sha256-r9yPZvUddbN8ljmEjXEzYdhLnBa7dkocalIsZwoeQJg=";
