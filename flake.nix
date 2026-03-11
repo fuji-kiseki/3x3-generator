@@ -48,7 +48,7 @@
           };
 
           buildPhase = ''
-            pnpm build --public-url 3x3-generator
+            pnpm build --public-url /3x3-generator/
           '';
 
           installPhase = ''
