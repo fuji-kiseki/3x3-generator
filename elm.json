@@ -9,6 +9,7 @@
       "elm/file": "1.0.5",
       "elm/html": "1.0.1",
       "elm/json": "1.1.4",
+      "elm/parser": "1.1.0",
       "elm/svg": "1.0.1"
     },
     "indirect": {
