@@ -1,13 +1,14 @@
 module Main exposing (..)
 
+import Array exposing (Array)
 import Browser
-import Dict exposing (Dict)
+import Dict
 import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed as Keyed
-import Image exposing (Image, ImageSelector, ImageState, alterImageSelector, setImage)
+import Image exposing (Image, ImageSelector, alterImageSelector)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Svg.Attributes
@@ -22,8 +23,8 @@ import Views.Upload exposing (viewUpload)
 
 
 type alias Model =
-    { images : Dict String ImageState
-    , modal : { target : Maybe String }
+    { images : Array Image
+    , modal : { target : Maybe Int }
     , imageSelector : ImageSelector
     , theme : Theme.Model
     }
@@ -31,13 +32,13 @@ type alias Model =
 
 type Msg
     = GotFiles (List File)
-    | ImageLoaded String Image
-    | OpenModal String
+    | ImageLoaded Int Image
+    | OpenModal Int
     | CloseModal
     | ChangeSearchQuery String
-    | UpdateEntry Image.ImageOption
+    | UpdateEntry ( String, Image )
     | SelectImage String
-    | ChangeCategory Image.ImageCategory
+    | ChangeCategory Image.Category
     | ToggleColorScheme
     | SystemThemeChanged Theme
     | StoredThemeChanged (Maybe StoredTheme)
@@ -59,10 +60,7 @@ init flags =
         theme =
             Theme.fromFlags flags
     in
-    ( { images =
-            List.range 0 8
-                |> List.map (\i -> ( String.fromInt i, Image.Empty ))
-                |> Dict.fromList
+    ( { images = Array.initialize 9 (\_ -> Image.Empty)
       , modal = { target = Nothing }
       , imageSelector =
             { selectedCategory = Image.Upload
@@ -91,11 +89,22 @@ view { modal, images, imageSelector, theme } =
             { onClose = CloseModal
             , onConfirm =
                 imageSelector.selectedImage
+                    |> Maybe.andThen (\id -> Dict.get id imageSelector.availableImages)
                     |> Maybe.andThen
-                        (\selectedId ->
-                            Dict.get selectedId imageSelector.availableImages
+                        (\image ->
+                            case image of
+                                Image.Loaded { url } ->
+                                    Maybe.map
+                                        (\id ->
+                                            { category = Image.Upload, url = url }
+                                                |> Image.Loaded
+                                                |> ImageLoaded id
+                                        )
+                                        modal.target
+
+                                Image.Empty ->
+                                    Nothing
                         )
-                    |> Maybe.map2 (\i { id, url } -> ImageLoaded i { name = id, url = url }) modal.target
             }
             (modal.target
                 |> Maybe.map (\_ -> True)
@@ -128,11 +137,12 @@ view { modal, images, imageSelector, theme } =
                                             if key == "Enter" then
                                                 Decode.succeed
                                                     (UpdateEntry
-                                                        { id = imageSelector.searchQuery
-                                                        , filename = imageSelector.searchQuery
-                                                        , category = Image.Upload
-                                                        , url = imageSelector.searchQuery
-                                                        }
+                                                        ( imageSelector.searchQuery
+                                                        , Image.Loaded
+                                                            { category = Image.Upload
+                                                            , url = imageSelector.searchQuery
+                                                            }
+                                                        )
                                                     )
 
                                             else
@@ -170,23 +180,17 @@ update msg model =
     case msg of
         GotFiles files ->
             ( model
-            , List.head files
-                |> Maybe.map setImage
-                |> Maybe.map
-                    (Task.perform <|
-                        \{ name, url } ->
-                            UpdateEntry
-                                { id = name
-                                , filename = name
-                                , category = Image.Upload
-                                , url = url
-                                }
-                    )
+            , files
+                |> List.head
+                |> Maybe.map (Image.fromFile >> Task.perform UpdateEntry)
                 |> Maybe.withDefault Cmd.none
             )
 
         ImageLoaded index image ->
-            ( { model | images = Dict.insert index (Image.Loaded image) model.images, modal = { target = Nothing } }
+            ( { model
+                | images = Array.set index image model.images
+                , modal = { target = Nothing }
+              }
             , Cmd.none
             )
 
@@ -199,13 +203,9 @@ update msg model =
         ChangeSearchQuery value ->
             ( alterImageSelector (\s -> { s | searchQuery = value }) model, Cmd.none )
 
-        UpdateEntry options ->
+        UpdateEntry ( id, image ) ->
             ( alterImageSelector
-                (\s ->
-                    { s
-                        | availableImages = Dict.insert options.id options s.availableImages
-                    }
-                )
+                (\s -> { s | availableImages = Dict.insert id image model.imageSelector.availableImages })
                 model
             , Cmd.none
             )

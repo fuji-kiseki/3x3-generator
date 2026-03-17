@@ -4,23 +4,28 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Image exposing (ImageOption)
+import Image exposing (Image(..))
 
 
-viewImage : msg -> ImageOption -> Bool -> Html msg
-viewImage msg images selected =
-    img
-        [ src images.url
-        , onClick msg
-        , class "rounded-md w-full aspect-square object-cover"
-        , classList [ ( "ring", selected ) ]
-        ]
-        []
+viewImage : msg -> Image -> Bool -> Html msg
+viewImage msg state selected =
+    case state of
+        Loaded image ->
+            img
+                [ src image.url
+                , onClick msg
+                , class "rounded-md w-full aspect-square object-cover"
+                , classList [ ( "ring", selected ) ]
+                ]
+                []
+
+        Empty ->
+            text ""
 
 
 imageList :
     (String -> msg)
-    -> Dict String ImageOption
+    -> Dict String Image
     -> Maybe String
     -> List ( String, Html msg )
 imageList msg images selected =

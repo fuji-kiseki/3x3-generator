@@ -5,23 +5,32 @@ import File exposing (File)
 import Task exposing (..)
 
 
-type alias Model =
-    { images : Dict Int ImageState }
-
-
-type alias Image =
-    { url : String, name : String }
-
-
-type ImageState
+type Image
     = Empty
-    | Loaded Image
+    | Loaded ImageArgs
 
 
-setImage : File -> Task Never Image
-setImage file =
-    File.toUrl file
-        |> Task.map (\url -> { url = url, name = File.name file })
+type alias ImageArgs =
+    { category : Category
+    , url : String
+    }
+
+
+type Category
+    = Upload
+    | Url
+
+
+
+-- Constructors
+
+
+fromFile : File -> Task Never ( String, Image )
+fromFile file =
+    file
+        |> File.toUrl
+        |> Task.map (ImageArgs Upload)
+        |> Task.map (\image -> ( File.name file, Loaded image ))
 
 
 
@@ -29,23 +38,10 @@ setImage file =
 
 
 type alias ImageSelector =
-    { selectedCategory : ImageCategory
+    { selectedCategory : Category
     , searchQuery : String
     , selectedImage : Maybe String
-    , availableImages : Dict String ImageOption
-    }
-
-
-type ImageCategory
-    = Upload
-    | Url
-
-
-type alias ImageOption =
-    { id : String
-    , filename : String
-    , category : ImageCategory
-    , url : String
+    , availableImages : Dict String Image
     }
 
 
