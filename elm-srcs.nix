@@ -24,6 +24,11 @@
     version = "1.1.4";
   };
 
+  "elm/parser" = {
+    sha256 = "0a3cxrvbm7mwg9ykynhp7vjid58zsw03r63qxipxp3z09qks7512";
+    version = "1.1.0";
+  };
+
   "elm/svg" = {
     sha256 = "1cwcj73p61q45wqwgqvrvz3aypjyy3fw732xyxdyj6s256hwkn0k";
     version = "1.0.1";
