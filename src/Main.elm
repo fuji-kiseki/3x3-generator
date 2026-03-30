@@ -24,6 +24,7 @@ import View.Upload exposing (viewUpload)
 
 type alias Model =
     { images : Array Image
+    , image : Image.Model
     , modal : { target : Maybe Int }
     , imageSelector : ImageSelector
     , theme : Theme.Model
@@ -36,12 +37,12 @@ type Msg
     | OpenModal Int
     | CloseModal
     | ChangeSearchQuery String
-    | UpdateEntry ( String, Image )
     | SelectImage String
     | ChangeCategory Image.Category
     | ToggleColorScheme
     | SystemThemeChanged Theme
     | StoredThemeChanged (Maybe StoredTheme)
+    | Image Image.Msg
 
 
 main : Program Encode.Value Model Msg
@@ -61,12 +62,12 @@ init flags =
             Theme.fromFlags flags
     in
     ( { images = Array.initialize 9 (\_ -> Image.Empty)
+      , image = Image.init
       , modal = { target = Nothing }
       , imageSelector =
             { selectedCategory = Image.Upload
             , searchQuery = ""
             , selectedImage = Nothing
-            , availableImages = Dict.empty
             }
       , theme = theme
       }
@@ -75,7 +76,7 @@ init flags =
 
 
 view : Model -> Html Msg
-view { modal, images, imageSelector, theme } =
+view { modal, images, imageSelector, theme, image } =
     div []
         [ button [ onClick ToggleColorScheme ]
             [ if Theme.Light == Theme.resolve theme.systemTheme theme.storedTheme then
@@ -89,10 +90,10 @@ view { modal, images, imageSelector, theme } =
             { onClose = CloseModal
             , onConfirm =
                 imageSelector.selectedImage
-                    |> Maybe.andThen (\id -> Dict.get id imageSelector.availableImages)
+                    |> Maybe.andThen (\id -> Dict.get id image.store)
                     |> Maybe.andThen
-                        (\image ->
-                            case image of
+                        (\i ->
+                            case i of
                                 Image.Loaded { url } ->
                                     Maybe.map
                                         (\id ->
@@ -136,13 +137,14 @@ view { modal, images, imageSelector, theme } =
                                         (\key ->
                                             if key == "Enter" then
                                                 Decode.succeed
-                                                    (UpdateEntry
-                                                        ( imageSelector.searchQuery
-                                                        , Image.Loaded
-                                                            { category = Image.Upload
-                                                            , url = imageSelector.searchQuery
-                                                            }
-                                                        )
+                                                    (Image <|
+                                                        Image.Set
+                                                            ( imageSelector.searchQuery
+                                                            , Image.Loaded
+                                                                { category = Image.Upload
+                                                                , url = imageSelector.searchQuery
+                                                                }
+                                                            )
                                                     )
 
                                             else
@@ -168,7 +170,7 @@ view { modal, images, imageSelector, theme } =
                         ( "nothing", text "" )
                  )
                     :: Image.imageList SelectImage
-                        imageSelector.availableImages
+                        image.store
                         imageSelector.selectedImage
                 )
             ]
@@ -182,7 +184,7 @@ update msg model =
             ( model
             , files
                 |> List.head
-                |> Maybe.map (Image.fromFile >> Task.perform UpdateEntry)
+                |> Maybe.map (Image.fromFile >> Task.perform (Image << Image.Set))
                 |> Maybe.withDefault Cmd.none
             )
 
@@ -202,13 +204,6 @@ update msg model =
 
         ChangeSearchQuery value ->
             ( alterImageSelector (\s -> { s | searchQuery = value }) model, Cmd.none )
-
-        UpdateEntry ( id, image ) ->
-            ( alterImageSelector
-                (\s -> { s | availableImages = Dict.insert id image model.imageSelector.availableImages })
-                model
-            , Cmd.none
-            )
 
         SelectImage selected ->
             ( alterImageSelector (\s -> { s | selectedImage = Just selected }) model, Cmd.none )
@@ -249,6 +244,13 @@ update msg model =
               }
             , Cmd.none
             )
+
+        Image imageMsg ->
+            let
+                ( image, cmd ) =
+                    Image.update imageMsg model.image
+            in
+            ( { model | image = image }, Cmd.map Image cmd )
 
 
 subscriptions : Model -> Sub Msg

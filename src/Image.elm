@@ -5,6 +5,11 @@ import File exposing (File)
 import Task exposing (..)
 
 
+type alias Model =
+    { store : Dict String Image
+    }
+
+
 type Image
     = Empty
     | Loaded ImageArgs
@@ -19,6 +24,25 @@ type alias ImageArgs =
 type Category
     = Upload
     | Url
+
+
+type Msg
+    = Set ( String, Image )
+
+
+init : Model
+init =
+    { store = Dict.empty
+    }
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        Set ( id, image ) ->
+            ( { model | store = Dict.insert id image model.store }
+            , Cmd.none
+            )
 
 
 
@@ -41,7 +65,6 @@ type alias ImageSelector =
     { selectedCategory : Category
     , searchQuery : String
     , selectedImage : Maybe String
-    , availableImages : Dict String Image
     }
 
 
