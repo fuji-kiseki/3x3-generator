@@ -8,9 +8,10 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed as Keyed
-import Image exposing (Image, ImageSelector, alterImageSelector)
+import Image exposing (Image)
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Search
 import Svg.Attributes
 import Task exposing (..)
 import Theme exposing (StoredTheme, Theme)
@@ -25,8 +26,9 @@ import View.Upload exposing (viewUpload)
 type alias Model =
     { images : Array Image
     , image : Image.Model
+    , category : Image.Category
+    , search : Search.Model
     , modal : { target : Maybe Int }
-    , imageSelector : ImageSelector
     , theme : Theme.Model
     }
 
@@ -36,13 +38,12 @@ type Msg
     | ImageLoaded Int Image
     | OpenModal Int
     | CloseModal
-    | ChangeSearchQuery String
-    | SelectImage String
     | ChangeCategory Image.Category
     | ToggleColorScheme
     | SystemThemeChanged Theme
     | StoredThemeChanged (Maybe StoredTheme)
     | Image Image.Msg
+    | Search Search.Msg
 
 
 main : Program Encode.Value Model Msg
@@ -63,12 +64,9 @@ init flags =
     in
     ( { images = Array.initialize 9 (\_ -> Image.Empty)
       , image = Image.init
+      , search = Search.init
       , modal = { target = Nothing }
-      , imageSelector =
-            { selectedCategory = Image.Upload
-            , searchQuery = ""
-            , selectedImage = Nothing
-            }
+      , category = Image.Upload
       , theme = theme
       }
     , Theme.apply theme.systemTheme <| Maybe.withDefault Theme.Auto theme.storedTheme
@@ -76,7 +74,7 @@ init flags =
 
 
 view : Model -> Html Msg
-view { modal, images, imageSelector, theme, image } =
+view { modal, images, category, theme, image, search } =
     div []
         [ button [ onClick ToggleColorScheme ]
             [ if Theme.Light == Theme.resolve theme.systemTheme theme.storedTheme then
@@ -89,7 +87,7 @@ view { modal, images, imageSelector, theme, image } =
         , Dialog.viewDialog
             { onClose = CloseModal
             , onConfirm =
-                imageSelector.selectedImage
+                search.selected
                     |> Maybe.andThen (\id -> Dict.get id image.store)
                     |> Maybe.andThen
                         (\i ->
@@ -115,7 +113,7 @@ view { modal, images, imageSelector, theme, image } =
                 [ div [ class "flex justify-between" ]
                     [ Switch.viewSwitch
                         { toMsg = ChangeCategory
-                        , selected = imageSelector.selectedCategory
+                        , selected = category
                         }
                         [ { value = Image.Upload
                           , content = [ text "Files" ]
@@ -130,7 +128,7 @@ view { modal, images, imageSelector, theme, image } =
                             [ type_ "text"
                             , name "url"
                             , placeholder "url"
-                            , value imageSelector.searchQuery
+                            , value search.query
                             , on "keydown"
                                 (Decode.field "key" Decode.string
                                     |> Decode.andThen
@@ -139,10 +137,10 @@ view { modal, images, imageSelector, theme, image } =
                                                 Decode.succeed
                                                     (Image <|
                                                         Image.Set
-                                                            ( imageSelector.searchQuery
+                                                            ( search.query
                                                             , Image.Loaded
                                                                 { category = Image.Upload
-                                                                , url = imageSelector.searchQuery
+                                                                , url = search.query
                                                                 }
                                                             )
                                                     )
@@ -151,7 +149,7 @@ view { modal, images, imageSelector, theme, image } =
                                                 Decode.fail ""
                                         )
                                 )
-                            , onInput ChangeSearchQuery
+                            , onInput (Search << Search.SetQuery)
                             , class "w-full px-2 py-1 bg-transparent outline-none"
                             , class "text-dn-foreground-300"
                             , class "placeholder:text-dn-foreground-100"
@@ -162,16 +160,16 @@ view { modal, images, imageSelector, theme, image } =
                     ]
                 ]
             , Keyed.ul [ class "grid grid-cols-3 grid-flow-row gap-2 m-4" ]
-                ((case imageSelector.selectedCategory of
+                ((case category of
                     Image.Upload ->
                         ( "upload", viewUpload GotFiles )
 
                     _ ->
                         ( "nothing", text "" )
                  )
-                    :: Image.imageList SelectImage
+                    :: Image.imageList (Search << Search.SetSelected)
                         image.store
-                        imageSelector.selectedImage
+                        search.selected
                 )
             ]
         ]
@@ -202,14 +200,8 @@ update msg model =
         CloseModal ->
             ( { model | modal = { target = Nothing } }, Cmd.none )
 
-        ChangeSearchQuery value ->
-            ( alterImageSelector (\s -> { s | searchQuery = value }) model, Cmd.none )
-
-        SelectImage selected ->
-            ( alterImageSelector (\s -> { s | selectedImage = Just selected }) model, Cmd.none )
-
         ChangeCategory category ->
-            ( alterImageSelector (\s -> { s | selectedCategory = category }) model, Cmd.none )
+            ( { model | category = category }, Cmd.none )
 
         ToggleColorScheme ->
             let
@@ -251,6 +243,13 @@ update msg model =
                     Image.update imageMsg model.image
             in
             ( { model | image = image }, Cmd.map Image cmd )
+
+        Search searchMsg ->
+            let
+                ( search, cmd ) =
+                    Search.update searchMsg model.search
+            in
+            ( { model | search = search }, Cmd.map Search cmd )
 
 
 subscriptions : Model -> Sub Msg

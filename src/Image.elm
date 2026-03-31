@@ -1,4 +1,4 @@
-module Image exposing (..)
+module Image exposing (Category(..), Image(..), Model, Msg(..), fromFile, init, update)
 
 import Dict exposing (Dict)
 import File exposing (File)
@@ -55,19 +55,3 @@ fromFile file =
         |> File.toUrl
         |> Task.map (ImageArgs Upload)
         |> Task.map (\image -> ( File.name file, Loaded image ))
-
-
-
--- Image Selector
-
-
-type alias ImageSelector =
-    { selectedCategory : Category
-    , searchQuery : String
-    , selectedImage : Maybe String
-    }
-
-
-alterImageSelector : (ImageSelector -> ImageSelector) -> { r | imageSelector : ImageSelector } -> { r | imageSelector : ImageSelector }
-alterImageSelector transform model =
-    { model | imageSelector = transform model.imageSelector }
