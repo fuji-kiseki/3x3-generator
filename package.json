@@ -12,9 +12,13 @@
   "devDependencies": {
     "@parcel/transformer-elm": "2.16.4",
     "@tailwindcss/postcss": "4.2.1",
-    "elm": "0.19.1-6",
     "parcel": "2.16.4",
     "postcss": "8.5.6",
     "tailwindcss": "4.2.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "@parcel/transformer-elm>elm": "-"
+    }
   }
 }

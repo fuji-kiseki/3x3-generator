@@ -4,19 +4,19 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@parcel/transformer-elm>elm': '-'
+
 importers:
 
   .:
     devDependencies:
       '@parcel/transformer-elm':
         specifier: 2.16.4
-        version: 2.16.4(@parcel/core@2.16.4(@swc/helpers@0.5.19))(elm@0.19.1-6)
+        version: 2.16.4(@parcel/core@2.16.4(@swc/helpers@0.5.19))
       '@tailwindcss/postcss':
         specifier: 4.2.1
         version: 4.2.1
-      elm:
-        specifier: 0.19.1-6
-        version: 0.19.1-6
       parcel:
         specifier: 2.16.4
         version: 2.16.4(@swc/helpers@0.5.19)
@@ -32,26 +32,6 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
-
-  '@elm_binaries/darwin_arm64@0.19.1-0':
-    resolution: {integrity: sha512-mjbsH7BNHEAmoE2SCJFcfk5fIHwFIpxtSgnEAqMsVLpBUFoEtAeX+LQ+N0vSFJB3WAh73+QYx/xSluxxLcL6dA==}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@elm_binaries/darwin_x64@0.19.1-0':
-    resolution: {integrity: sha512-QGUtrZTPBzaxgi9al6nr+9313wrnUVHuijzUK39UsPS+pa+n6CmWyV/69sHZeX9qy6UfeugE0PzF3qcUiy2GDQ==}
-    cpu: [x64]
-    os: [darwin]
-
-  '@elm_binaries/linux_x64@0.19.1-0':
-    resolution: {integrity: sha512-T1ZrWVhg2kKAsi8caOd3vp/1A3e21VuCpSG63x8rDie50fHbCytTway9B8WHEdnBFv4mYWiA68dzGxYCiFmU2w==}
-    cpu: [x64]
-    os: [linux]
-
-  '@elm_binaries/win32_x64@0.19.1-0':
-    resolution: {integrity: sha512-yDleiXqSE9EcqKtd9SkC/4RIW8I71YsXzMPL79ub2bBPHjWTcoyyeBbYjoOB9SxSlArJ74HaoBApzT6hY7Zobg==}
-    cpu: [x64]
-    os: [win32]
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -379,8 +359,6 @@ packages:
   '@parcel/transformer-elm@2.16.4':
     resolution: {integrity: sha512-ruLiVrIYiJaygp3Oqnk7ou7dsnNOVpJn5Z3xv+M4H9sE6A3+ZSDvrpJe5Cvs/yglY4795RQ6P3CIuri1f3sXRA==}
     engines: {node: '>= 16.0.0', parcel: ^2.16.4}
-    peerDependencies:
-      elm: ^0.19.1-5
 
   '@parcel/transformer-html@2.16.4':
     resolution: {integrity: sha512-w6JErYTeNS+KAzUAER18NHFIFFvxiLGd4Fht1UYcb/FDjJdLAMB/FljyEs0Rto/WAhZ2D0MuSL25HQh837R62g==}
@@ -800,11 +778,6 @@ packages:
 
   elm-hot@1.1.6:
     resolution: {integrity: sha512-zYZJlfs7Gt4BdjA+D+857K+XAWzwwySJmXCgFpHW1dIEfaHSZCIPYPf7/jinZBLfKRkOAlKzI32AA84DY50g7Q==}
-
-  elm@0.19.1-6:
-    resolution: {integrity: sha512-mKYyierHICPdMx/vhiIacdPmTPnh889gjHOZ75ZAoCxo3lZmSWbGP8HMw78wyctJH0HwvTmeKhlYSWboQNYPeQ==}
-    engines: {node: '>=7.0.0'}
-    hasBin: true
 
   enhanced-resolve@5.20.0:
     resolution: {integrity: sha512-/ce7+jQ1PQ6rVXwe+jKEg5hW5ciicHwIQUagZkp6IufBoY3YDgdTTY1azVs0qoRgVmvsNB+rbjLJxDAeHHtwsQ==}
@@ -1226,18 +1199,6 @@ packages:
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
-
-  '@elm_binaries/darwin_arm64@0.19.1-0':
-    optional: true
-
-  '@elm_binaries/darwin_x64@0.19.1-0':
-    optional: true
-
-  '@elm_binaries/linux_x64@0.19.1-0':
-    optional: true
-
-  '@elm_binaries/win32_x64@0.19.1-0':
-    optional: true
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
@@ -1760,13 +1721,12 @@ snapshots:
       - '@parcel/core'
       - napi-wasm
 
-  '@parcel/transformer-elm@2.16.4(@parcel/core@2.16.4(@swc/helpers@0.5.19))(elm@0.19.1-6)':
+  '@parcel/transformer-elm@2.16.4(@parcel/core@2.16.4(@swc/helpers@0.5.19))':
     dependencies:
       '@parcel/diagnostic': 2.16.4
       '@parcel/plugin': 2.16.4(@parcel/core@2.16.4(@swc/helpers@0.5.19))
       command-exists: 1.2.9
       cross-spawn: 7.0.6
-      elm: 0.19.1-6
       elm-hot: 1.1.6
       node-elm-compiler: 5.0.6
       nullthrows: 1.1.1
@@ -2181,13 +2141,6 @@ snapshots:
   electron-to-chromium@1.5.313: {}
 
   elm-hot@1.1.6: {}
-
-  elm@0.19.1-6:
-    optionalDependencies:
-      '@elm_binaries/darwin_arm64': 0.19.1-0
-      '@elm_binaries/darwin_x64': 0.19.1-0
-      '@elm_binaries/linux_x64': 0.19.1-0
-      '@elm_binaries/win32_x64': 0.19.1-0
 
   enhanced-resolve@5.20.0:
     dependencies:
