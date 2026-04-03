@@ -9,7 +9,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Html.Keyed as Keyed
 import Image exposing (Image)
-import Json.Decode as Decode
 import Json.Encode as Encode
 import Search
 import Svg.Attributes
