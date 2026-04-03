@@ -122,41 +122,17 @@ view { modal, images, category, theme, image, search } =
                           , content = [ text "Url" ]
                           }
                         ]
-                    , div
-                        [ class "flex w-fit px-2 rounded-lg border bg-dn-background-100 border-dn-border-100" ]
-                        [ input
-                            [ type_ "text"
-                            , name "url"
-                            , placeholder "url"
-                            , value search.query
-                            , on "keydown"
-                                (Decode.field "key" Decode.string
-                                    |> Decode.andThen
-                                        (\key ->
-                                            if key == "Enter" then
-                                                Decode.succeed
-                                                    (Image <|
-                                                        Image.Set
-                                                            ( search.query
-                                                            , Image.Loaded
-                                                                { category = Image.Upload
-                                                                , url = search.query
-                                                                }
-                                                            )
-                                                    )
-
-                                            else
-                                                Decode.fail ""
-                                        )
-                                )
-                            , onInput (Search << Search.SetQuery)
-                            , class "w-full px-2 py-1 bg-transparent outline-none"
-                            , class "text-dn-foreground-300"
-                            , class "placeholder:text-dn-foreground-100"
-                            , class "caret-dn-foreground-100"
-                            ]
-                            []
-                        ]
+                    , Search.view search
+                        (\input ->
+                            Image <|
+                                Image.Set
+                                    ( search.query
+                                    , Image.Loaded
+                                        { category = Image.Upload
+                                        , url = input
+                                        }
+                                    )
+                        )
                     ]
                 ]
             , Keyed.ul [ class "grid grid-cols-3 grid-flow-row gap-2 m-4" ]
