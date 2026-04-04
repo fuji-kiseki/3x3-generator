@@ -132,6 +132,7 @@ view { modal, images, category, theme, image, search } =
                                         }
                                     )
                         )
+                        (Search << Search.SetQuery)
                     ]
                 ]
             , Keyed.ul [ class "grid grid-cols-3 grid-flow-row gap-2 m-4" ]

@@ -2,8 +2,7 @@ module Search exposing (Model, Msg(..), init, update, view)
 
 import Html exposing (Html)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on)
-import Json.Decode as Decode
+import Html.Events exposing (onInput, onSubmit)
 
 
 type alias Model =
@@ -32,10 +31,11 @@ update msg model =
             ( { model | selected = Just selected }, Cmd.none )
 
 
-view : Model -> (String -> msg) -> Html msg
-view model msg =
+view : Model -> (String -> msg) -> (String -> msg) -> Html msg
+view model onSubmitMsg onInputMsg =
     Html.form
         [ attribute "role" "search"
+        , onSubmit <| onSubmitMsg model.query
         , class "flex w-fit px-2 rounded-lg border bg-dn-background-100 border-dn-border-100"
         ]
         [ Html.input
@@ -43,7 +43,7 @@ view model msg =
             , name "url"
             , placeholder "url"
             , value model.query
-            , on "keydown" <| onKeydown (msg model.query)
+            , onInput onInputMsg
             , class "w-full px-2 py-1 bg-transparent outline-none"
             , class "text-dn-foreground-300"
             , class "placeholder:text-dn-foreground-100"
@@ -51,16 +51,3 @@ view model msg =
             ]
             []
         ]
-
-
-onKeydown : msg -> Decode.Decoder msg
-onKeydown msg =
-    Decode.field "key" Decode.string
-        |> Decode.andThen
-            (\key ->
-                if key == "Enter" then
-                    Decode.succeed msg
-
-                else
-                    Decode.fail ""
-            )
