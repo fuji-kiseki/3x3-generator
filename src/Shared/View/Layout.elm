@@ -1,4 +1,4 @@
-module View.Layout exposing (..)
+module Shared.View.Layout exposing (..)
 
 import Array exposing (Array)
 import Dict exposing (Dict)
@@ -7,8 +7,8 @@ import Html.Attributes exposing (class, draggable, src)
 import Html.Events exposing (onClick)
 import Html.Keyed as Keyed
 import Image exposing (Image)
+import Shared.View.Icons exposing (viewImagePlus)
 import Svg.Attributes
-import View.Icons exposing (viewImagePlus)
 
 
 viewLayoutGrid : Array Image -> (Int -> msg) -> Html msg

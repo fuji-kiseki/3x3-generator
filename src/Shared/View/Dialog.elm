@@ -1,8 +1,8 @@
-module View.Dialog exposing (ModalConfig, viewDialog, viewHeader)
+module Shared.View.Dialog exposing (ModalConfig, viewDialog, viewHeader)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
-import View.Button as Button exposing (ButtonType(..), viewButton)
+import Shared.View.Button as Button exposing (ButtonType(..), viewButton)
 
 
 type alias ModalConfig msg =

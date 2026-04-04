@@ -1,4 +1,4 @@
-module View.Button exposing (ButtonType(..), viewButton)
+module Shared.View.Button exposing (ButtonType(..), viewButton)
 
 import Html exposing (..)
 import Html.Attributes exposing (class, disabled)

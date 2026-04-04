@@ -1,4 +1,4 @@
-module View.Image exposing (..)
+module Shared.View.Image exposing (..)
 
 import Dict exposing (Dict)
 import Html exposing (..)

@@ -1,12 +1,12 @@
-module View.Upload exposing (viewUpload)
+module Shared.View.Upload exposing (viewUpload)
 
 import File exposing (File)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on)
 import Json.Decode as D
+import Shared.View.Icons exposing (viewFileUp)
 import Svg.Attributes
-import View.Icons exposing (viewFileUp)
 
 
 viewUpload : (List File -> msg) -> Html msg

@@ -11,15 +11,15 @@ import Html.Keyed as Keyed
 import Image exposing (Image)
 import Json.Encode as Encode
 import Search
+import Shared.View.Dialog as Dialog
+import Shared.View.Icons exposing (viewMoon, viewSun)
+import Shared.View.Image as Image
+import Shared.View.Layout exposing (viewLayoutGrid)
+import Shared.View.Switch as Switch
+import Shared.View.Upload exposing (viewUpload)
 import Svg.Attributes
 import Task exposing (..)
 import Theme exposing (StoredTheme, Theme)
-import View.Dialog as Dialog
-import View.Icons exposing (viewMoon, viewSun)
-import View.Image as Image
-import View.Layout exposing (viewLayoutGrid)
-import View.Switch as Switch
-import View.Upload exposing (viewUpload)
 
 
 type alias Model =
